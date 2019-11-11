@@ -1,7 +1,5 @@
 
 
-//funciones iniciales
-
 //-------ANIMACION TITULO------------
 function cambioColor1(elemento){
     $(elemento).animate({
@@ -20,370 +18,113 @@ function cambioColor2(elemento){
 };
 //-----------------------------------
 
-//------------ALEATORIOS-------------
-function imgRandom(min, max){
-    min = Math.ceil(min);
-    max = Math.floor(max)
-    return Math.floor(Math.random() * (max - min)) + min;
+//------------ANIMACIONES------------
+function remove(elemento){
+    $(elemento).detach()
 }
 //-----------------------------------
 
-//----FILAS Y COLUMNAS DE DULCES-----
-function arrayCandys(arrayTipe, index){
-    var candyCol1 = $(".col-1").children();
-    var candyCol2 = $(".col-2").children();
-    var candyCol3 = $(".col-3").children();
-    var candyCol4 = $(".col-4").children();
-    var candyCol5 = $(".col-5").children();
-    var candyCol6 = $(".col-6").children();
-    var candyCol7 = $(".col-7").children();
 
-    var candyColumns = $([candyCol1, candyCol2, candyCol3, candyCol4, candyCol5, candyCol6, candyCol7]);
-
-    if(typeof index === "number"){
-        var candyRow = $([candyCol1.eq(index), candyCol2.eq(index), candyCol3.eq(index),candyCol4.eq(index), candyCol5.eq(index), candyCol6.eq(index), candyCol7.eq(index)]);
-    }else{
-        index = "";
-    }
-
-    if(arrayTipe === 'columns'){
-        return candyColumns;
-    }else if(arrayTipe === "rows" && index !== ""){
-        return candyRow;
-    }
-}
-
-//---ARREGLO DE FILAS---
-function candyRows(index){
-    var candyRow = arrayCandys("rows", index);
-    return candyRow;
-};
-
-//---ARREGLO COLUMNAS---
-function candyColumns(index){
-    var candyColumn = arrayCandys("columns");
-    return candyColumn[index];
+//--GENERADOR DE NUMEROS ALEATORIOS--
+function randomNum(min, max){
+    //genera un numero aleatorio entero
+    return Math.floor((Math.random() * max) + min);
 };
 //-----------------------------------
 
-//---VALIDACION DE CANDYS EN LINEA---
-function validacionColumns(){
-    for(j=0; j < 7; j++){
-        var counter = 0;
-        var candyPosition = [];
-        var extraCandyPosition = [];
-        var candyColumn = candyColumns(j);
-        var comparacionValor = candyColumn.eq(0);
-        var gap = false;
+//-----VALIDACION TRES EN LINEA------
+function validation(elemento){
+    
+}
 
-        for(i=0; i < candyColumn.length; i++){
-            var srcComparacion = comparacionValor.attr('src');
-            var srcCandy = candyColumn.eq(i).attr('src');
 
-            if(srcComparacion != srcCandy){
-                if(candyPosition >= 3){
-                    gap = true;
-                }else{
-                    candyPosition = [];
-                }
-                counter = 0;
-            }else{
-                if(counter == 0){
-                    if(!gap){
-                        candyPosition.push(i - 1);
-                    }else{
-                        extraCandyPosition.push(i - 1);
-                    }
-                }
-                if(!gap){
-                    candyPosition.push(i);
-                }else{
-                    extraCandyPosition.push(i);
-                }
-                counter += 1;
-            }
-            comparacionValor = candyColumn.eq(i);
+//--------RELLENO DEL TABLERO--------
+function llenarTablero(){
+    $("div [class^='col']").each(function(){
+        for(i=1; i < 8; i++){
+            num = randomNum(1, 4)
+            $(this).append("<img class='elemento' src='image/" + num + ".png'>");
         }
-        if (extraCandyPosition.length > 2) {
-			candyPosition = $.merge(candyPosition, extraCandyPosition);
-		}
-		if (candyPosition.length <= 2) {
-			candyPosition = [];
-		}
-		candyCount = candyPosition.length;
-		if (candyCount >= 3) {
-			borrarColumnaCandy(candyPosition, candyColumn);
-			setScore(candyCount);
-		}
-    }
+    })
 }
-function borrarColumnaCandy(candyPosition, candyColumn) {
-	for (var i = 0; i < candyPosition.length; i++) {
-		candyColumn.eq(candyPosition[i]).addClass('delete');
-	}
+
+//--------EFECTO DRAG & DROP---------
+function dragAndDrop(){
+    $(".panel-tablero img").draggable();
+    
+    
 }
 //-----------------------------------
 
-//----VALIDA LOS DULCES REPETIDOS----
-function validacionRow(){
-    for(j=0; j < 6; j++){
-        var counter = 0;
-        var candyPosition = [];
-        var extraCandyPosition = [];
-        var candyRow = candyRows(j);
-        var comparacionValor = candyRow[0]
-        var gap = false;
 
-        for(i=1; i < candyRow.length; i++){
-            var srcComparacion = comparacionValor.attr('src');
-            var srcCandy = candyRow[i].attr('src');
-
-            if(srcComparacion != srcCandy){
-                if(candyPosition >= 3){
-                    gap = true;
-                }else{
-                    candyPosition = [];
-                }
-                counter = 0;
-            }else{
-                if(counter == 0){
-                    if(!gap){
-                        candyPosition.push(i - 1);
-                    }else{
-                        extraCandyPosition.push(i - 1);
-                    }
-                }
-                if(!gap){
-                    candyPosition.push(i);
-                }else{
-                    extraCandyPosition.push(i);
-                }
-                counter += 1;
-            }
-            comparacionValor = candyRow.eq(i);
-        }
-        if (extraCandyPosition.length > 2) {
-			candyPosition = $.merge(candyPosition, extraCandyPosition);
-		}
-		if (candyPosition.length <= 2) {
-			candyPosition = [];
-		}
-		candyCount = candyPosition.length;
-		if (candyCount >= 3) {
-			borrarHorizontal(candyPosition, candyRow);
-			setScore(candyCount);
-		}
-    }
-    function borrarHorizontal(candyPosition, candyRow){
-        for(i=0; i < candyPosition.length; i++){
-            candyRow.eq(candyPosition[i]).addClass("delete");
-        }
-    }
-}
-//-----------------------------------
-
-//--------FUNCION DE CONTADOR--------
-function setScore(candyCount){
-    var score = Number($("#score-text").text());
-    switch(candyCount){
-        case 3:
-            score += 25;
-        break;
-
-        case 4:
-            score += 50;
-        break;
-
-        case 5:
-            score += 75;
-        break;
-        
-        case 6:
-            score += 100;
-        break;
-
-        case 7:
-            score += 200;
-        break;
-    }
-    $("#score-text").text(score);
-}
-//-----------------------------------
-
-//---PONE LOS DULCES EN EL TABLERO---
-function checkBoard(){
-    fillBoard();
+//-----------INICIAR JUEGO-----------
+function Iniciar(){
+    $(".btn-reinicio").on("click", function(){
+        if($(this).text() == "Iniciar"){
+            llenarTablero();
+            $(this).text("Reiniciar")
+        }else if($(this).text() == "Reiniciar"){
+            location.reload();
+            $(this).text("Iniciar");
+        };
+        validation();
+        dragAndDrop();
+        initTime();
+    })
 }
 
-function fillBoard() {
-	var top = 6;
-	var column = $('[class^="col-"]');
 
-	column.each(function () {
-		var candys = $(this).children().length;
-		var agrega = top - candys;
-		for (var i = 0; i < agrega; i++) {
-			var candyType = imgRandom(1, 5);
-			if (i === 0 && candys < 1) {
-				$(this).append('<img src="image/' + candyType + '.png" class="element"></img>');
-			} else {
-				$(this).find('img:eq(0)').before('<img src="image/' + candyType + '.png" class="element"></img>');
-			}
-		}
-	});
-	addCandyEvents();
-	setValidations();
-}
-//-----------------------------------
+//Document.ready
+$(document).ready(function(){
+    cambioColor1(".main-titulo");
+    Iniciar()
+})
 
-//-----SI HAY DULCES QUE BORRAR------
-function setValidations() {
-	validacionColumns();
-	validacionRow();
-	// Si hay dulces que borrar
-	if ($('img.delete').length !== 0) {
-		deletesCandyAnimation();
-	}
-}
-//-----------------------------------
+//----------TEMPORIZADOR-------------
 
-//INTERACCION DEL USUARIO CON LOS DULCES
-//efecto de movimiento entre los caramelos 
-function addCandyEvents(){
-    $('img').draggable({
-		containment: '.panel-tablero',
-		droppable: 'img',
-		revert: true,
-		revertDuration: 500,
-		grid: [100, 100],
-		zIndex: 10,
-		drag: constrainCandyMovement
-	});
-	$('img').droppable({
-		drop: swapCandy
-	});
-	enableCandyEvents();
-}
+//inicializador
+function initTime(){
+    var tiempo = $("#timer");
+    var s = 0;
+    var m = 2;
 
-function disableCandyEvents() {
-	$('img').draggable('disable');
-	$('img').droppable('disable');
-}
+    var interval = setInterval(function(){
+        //condicional defectusa debe ser perfeccionada 
+        if(m < 10 & s < 10){
+            tiempo.text("0" + m + ":" + "0" + s);
+        }else if(m < 10 & s >= 10){
+            tiempo.text("0" + m + ":" + s)
+        };
 
-function enableCandyEvents() {
-	$('img').draggable('enable');
-	$('img').droppable('enable');
-}
+        if(s == 0){
+            m --;
+            s = 60;
+        }else{
+            s --;
+            if(m == 0 & s == 0){
+                window.clearInterval(interval);
+                endGame();
+            };
+    
+        };
 
-//hace que el caramelo sea solido al moverse
-function constrainCandyMovement(event, candyDrag) {
-	candyDrag.position.top = Math.min(100, candyDrag.position.top);
-	candyDrag.position.bottom = Math.min(100, candyDrag.position.bottom);
-	candyDrag.position.left = Math.min(100, candyDrag.position.left);
-	candyDrag.position.right = Math.min(100, candyDrag.position.right);
-}
+    },100);
+};
 
-//reemplaza a los caramelos anteriores
-function swapCandy(event, candyDrag) {
-	var candyDrag = $(candyDrag.draggable);
-	var dragSrc = candyDrag.attr('src');
-	var candyDrop = $(this);
-	var dropSrc = candyDrop.attr('src');
-	candyDrag.attr('src', dropSrc);
-	candyDrop.attr('src', dragSrc);
 
-	setTimeout(function () {
-		checkBoard();
-		if ($('img.delete').length === 0) {
-			candyDrag.attr('src', dragSrc);
-			candyDrop.attr('src', dropSrc);
-		} else {
-			updateMoves();
-		}
-	}, 500);
+function endGame(){
+    $(".panel-tablero").toggle("drop", "slow");
+    $(".panel-score").animate({
+        width : "100%"
+    }, 2000)
+};
 
-}
-
-function checkBoardPromise(result) {
-	if (result) {
-		checkBoard();
-	}
-}
-
-//valida la puntuacion por cantidad de elementos en linea
-function updateMoves() {
-	var actualValue = Number($('#movimientos-text').text());
-	var result = actualValue += 1;
-	$('#movimientos-text').text(result);
-}
-
-//eliminacion automatica de los elementos
-function deletesCandyAnimation() {
-	disableCandyEvents();
-	$('img.delete').effect('pulsate', 400);
-	$('img.delete').animate({
-			opacity: '0'
-		}, {
-			duration: 300
-		})
-		.animate({
-			opacity: '0'
-		}, {
-			duration: 400,
-			complete: function () {
-				deletesCandy()
-					.then(checkBoardPromise)
-					.catch(showPromiseError);
-			},
-			queue: true
-		});
-}
-
-//llenado automatico de los espacios con elementos
-function showPromiseError(error) {
-	console.log(error);
-}
-
-function deletesCandy() {
-	return new Promise(function (resolve, reject) {
-		if ($('img.delete').remove()) {
-			resolve(true);
-		} else {
-			reject('No se pudo eliminar Caramelo');
-		}
-	})
-}
-
-//punto 4 y 6. temporizador y boton reiniciar
-//cambia el aspecto de la página
-//final del juego
-function endGame() {
-	$('div.panel-tablero, div.time').effect('fold');
-	$('h1.main-titulo').addClass('title-over')
-		.text('Gracias por jugar!');
-	$('div.score, div.moves, div.panel-score').width('100%');
-
-}
-
-// inicia el juego
-function initGame() {
-
-	cambioColor1('h1.main-titulo');
-
-	$('.btn-reinicio').click(function () {
-		if ($(this).text() === 'Reiniciar') {
-			location.reload(true);
-		}
-		checkBoard();
-		$(this).text('Reiniciar');
-		$('#timer').startTimer({
-			onComplete: endGame
-		})
-	});
-}
-
-// Prepara el juego
-$(function() {
-	initGame();
-});
-//-----------------------------------
+// eventos para eliminar los tableros 
+/*$(".panel-tablero").detach();
+    $(".time").detach();
+    $(".panel-score").css({
+        width : "100%",
+    });
+    $(".score, .moves").css({
+        height : "35%",    
+    }); */
